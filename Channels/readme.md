@@ -1,2 +1,4 @@
-.coins not added, mohib asked to wait
-.need to add leverage
+
+.adding coins
+.adding leverage
+.creating 3_csv
