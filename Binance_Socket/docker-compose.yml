@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  connection:
+      build: ./connection/
+      image: connection
+      container_name: Connection
+      volumes:
+        - ./shared:/app/usr/src/shared
+      depends_on:
+        - mongo
+      networks:
+        - back
+  mongo:
+    image: mongo
+    restart: always
+    container_name: Mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 27017:27017
+    networks:
+      - back
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    container_name: Mongo_Express
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+    networks:
+      - back
+
+  socket:
+    build: ./Socket/
+    image: socket
+    container_name: Socket
+    volumes:
+      - ./shared:/app/usr/src/shared
+networks:
+  back:
+    driver: bridge 
+
