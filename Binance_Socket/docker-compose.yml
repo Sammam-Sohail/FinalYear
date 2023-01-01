@@ -9,6 +9,7 @@ services:
         - ./shared:/app/usr/src/shared
       depends_on:
         - mongo
+        - socket
       networks:
         - back
   mongo:
