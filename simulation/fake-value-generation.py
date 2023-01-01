@@ -1,6 +1,6 @@
 import random
 import time
-from sklearn.preprocessing import MinMaxScaler,StandardScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 import numpy as np
 
 
@@ -15,13 +15,14 @@ t3achieved = False
 # w2 = 0
 # w3 = 0
 
-def generate_random_value(mean, stddev):
-  value = random.normalvariate(mean, stddev)
-  return value
 
-def check_guess(t1,t2,t3,value,t_current):
-    # print("current value:", value)
-    value = round(generate_random_value(value, random.uniform(3,5)),4)
+def generate_random_value(mean, stddev):
+    value = random.normalvariate(mean, stddev)
+    return value
+
+
+def check_guess(t1, t2, t3, value, t_current):
+    value = round(generate_random_value(value, random.uniform(3, 5)), 4)
     l1.append(value)
     global t1achieved
     global t2achieved
@@ -53,14 +54,15 @@ def check_guess(t1,t2,t3,value,t_current):
 
     return value
 
+
 if __name__ == "__main__":
 
     eva = dict()
     for i in range(1):
         value = 100
-        T1 = 101 + random.uniform(2,3)
-        T2 = T1 + random.uniform(2,3)
-        T3 = T2 + random.uniform(2,3)
+        T1 = 101 + random.uniform(2, 3)
+        T2 = T1 + random.uniform(2, 3)
+        T3 = T2 + random.uniform(2, 3)
         l1 = list()
         # l2 = list()
         # l3 = list()
@@ -74,25 +76,23 @@ if __name__ == "__main__":
         t1achievedtime = 0
         t2achievedtime = 0
         t3achievedtime = 0
-        t_end = time.time() + 30 
+        t_end = time.time() + 30
         t_start = time.time()
         while time.time() < t_end:
             t_current = time.time() - t_start
-            value = check_guess(T1,T2,T3,value,t_current)
+            value = check_guess(T1, T2, T3, value, t_current)
             if value == -1:
                 break
             time.sleep(1)
 
-        secList = [i for i in range(30,0,-1)]
-        secList = np.reshape(secList, (-1,1))
+        secList = [i for i in range(30, 0, -1)]
+        secList = np.reshape(secList, (-1, 1))
         minMaxScaler = MinMaxScaler(feature_range=(0, 1))
         minMaxScaler.fit(secList)
         scaledList = minMaxScaler.transform(secList)
-        f1 = scaledList[int(round(t1achievedtime,0))][0]
-        f2 = scaledList[int(round(t2achievedtime,0))][0]
-        f3 = scaledList[int(round(t3achievedtime,0))][0]
-
-        
+        f1 = scaledList[int(round(t1achievedtime, 0))][0]
+        f2 = scaledList[int(round(t2achievedtime, 0))][0]
+        f3 = scaledList[int(round(t3achievedtime, 0))][0]
 
         # sD = np.std(l1)
         # print("std:", sD)
@@ -114,13 +114,12 @@ if __name__ == "__main__":
         #     else:
         #         nsum += l1[i]
         #         ncount += 1
-        
+
         # print("pmean",psum/pcount)
         # if ncount != 0: print("num",nsum/ncount)
         # [0,0.2,0.4,0.6,0.8,1]
 
         # std = 4
-
 
         # p1 = ((T1 - value) / T1)
         # p2 = ((T2 - T1) / T2)
@@ -136,9 +135,8 @@ if __name__ == "__main__":
         # print("T2 achieved at:", t2achievedtime)
         # print("T3 achieved at:", t3achievedtime)
 
-        
-        
-    #print sorted eva
-    eva = sorted(eva.items(), key=lambda x:x[1])
+    # print sorted eva
+    eva = sorted(eva.items(), key=lambda x: x[1])
     # print(eva)
-    
+
+    # if three targets achieved
