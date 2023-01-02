@@ -2,9 +2,9 @@ FROM python:3.8-slim
 
 WORKDIR /app/usr/src/
 
-COPY . .
+COPY . ./Telegram/
 
-# RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt
 RUN apt-get update & apt-get install
 
-CMD [ "python","./Channels/binancefuturesignal/binancefuturesignal.py" ]
+CMD [ "python","./Telegram/Channels/binancefuturesignal/binancefuturesignal.py" ]

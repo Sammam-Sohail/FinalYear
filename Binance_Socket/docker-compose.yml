@@ -48,6 +48,8 @@ services:
     build: ./telegram/
     image: telegram
     container_name: Telegram
+    volumes:
+      - ./shared:/app/usr/src/shared
 
 networks:
   back:
