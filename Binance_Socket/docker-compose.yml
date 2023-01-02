@@ -2,16 +2,16 @@ version: '3'
 
 services:
   connection:
-      build: ./connection/
-      image: connection
-      container_name: Connection
-      volumes:
-        - ./shared:/app/usr/src/shared
-      depends_on:
-        - mongo
-        - socket
-      networks:
-        - back
+    build: ./connection/
+    image: connection
+    container_name: Connection
+    volumes:
+      - ./shared:/app/usr/src/shared
+    depends_on:
+      - mongo
+      - socket
+    networks:
+      - back
   mongo:
     image: mongo
     restart: always
@@ -43,7 +43,12 @@ services:
     container_name: Socket
     volumes:
       - ./shared:/app/usr/src/shared
+
+  telegram:
+    build: ./telegram/
+    image: telegram
+    container_name: Telegram
+
 networks:
   back:
-    driver: bridge 
-
+    driver: bridge

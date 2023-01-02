@@ -1,0 +1,10 @@
+FROM python:3.8-slim
+
+WORKDIR /app/usr/src/
+
+COPY . .
+
+# RUN pip install -r requirements.txt
+RUN apt-get update & apt-get install
+
+CMD [ "python","./Channels/binancefuturesignal/binancefuturesignal.py" ]
