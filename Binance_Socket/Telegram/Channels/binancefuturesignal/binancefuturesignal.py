@@ -1,15 +1,12 @@
 import pandas as pd
 import re
 import os
-os.chdir("C://Users//Mohib//Desktop//FinalYear//Binance_Socket//Telegram//")
-for Folder_Name in os.listdir(os.path.join(os.getcwd(),"Channels")):
+Root_PATH = os.getcwd()
+for Folder_Name in os.listdir(os.path.join(os.getcwd(),"Telegram","Channels")):
     if (str(os.path.basename(__file__)).split(".")[0] == Folder_Name):
-        os.chdir(os.path.join(os.getcwd(),"Channels",Folder_Name))
+        os.chdir(os.path.join(os.getcwd(),"Telegram","Channels",Folder_Name))
 
-        current_path = os.getcwd()
-        Root_PATH = os.path.abspath("../../../")
-        folder_name = os.path.basename(current_path)
-
+        folder_name = os.path.basename(os.getcwd())
 
         colnames=['Name','Date','Time', 'Text','Cleaned_text'] 
         exchanges = ['BINANCE', 'BYBIT', 'FTX', 'HUOBI', 'KUCOIN', 'POLONIEX','KRAKEN']
@@ -61,13 +58,9 @@ for Folder_Name in os.listdir(os.path.join(os.getcwd(),"Channels")):
         df["Call"] = df['Cleaned_text'].apply(extractor)
 
         df1 = df.copy()
-        df1 = df1.drop(columns=["Text"])
+        df1 = df1.drop(columns=["Text","Cleaned_text"])
 
-
-        if not os.path.exists(f"{Root_PATH}\\shared\\Calls\\{folder_name}\\"):
-          os.mkdir(f"{Root_PATH}\\shared\\Calls\\{folder_name}")
-        
-        df1.to_csv(f"{Root_PATH}\\shared\\Calls\\{folder_name}/{folder_name}.csv", encoding='utf-8', index=False)
+        df1.to_csv(f"{Root_PATH}\\shared\\Calls.csv", encoding='utf-8', index=False,mode="a",header=False)
 
 
 

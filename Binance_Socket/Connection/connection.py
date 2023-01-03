@@ -12,7 +12,7 @@ df2 = df.groupby("Open Time")['Values'].apply(
 df2 = df2.sort_values(by=['Open Time'], ascending=False)
 data_dict = df2.to_dict("records")
 db.Binance.insert_many(data_dict)
-print("Data Inserted at", datetime.now())
+print("Coins Data Inserted at", datetime.now())
 
 
 
@@ -20,8 +20,8 @@ for i in os.listdir("./shared/Calls/"):
     df = pd.read_csv(f"./shared/Calls/{i}/{i}.csv")
     df.drop(columns=["Cleaned_text"])
     data_dict = df.to_dict("records")
-    db.Calls.insert_many(data_dict)
-    print("Data Inserted at", datetime.now())
+    db.Telegram.insert_many(data_dict)
+    print("Signals Data Inserted at", datetime.now())
 
 # with open('../shared/Last_Updated.txt', 'w') as f:
 #     f.write(str(datetime.now()))

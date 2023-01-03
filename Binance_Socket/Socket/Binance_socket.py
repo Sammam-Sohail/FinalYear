@@ -5,18 +5,18 @@ import os
 from datetime import datetime
 import dateutil.relativedelta
 
-os.chdir("/workspace/FinalYear/Binance_Socket/Socket")
+os.chdir(os.path.join(os.getcwd(),"Socket"))
 
 config = configparser.ConfigParser()
 config.read_file(open('config.cfg'))
 PUBLIC_KEY = config.get('BINANCE', 'PUBLIC_KEY')
 PRIVATE_KEY = config.get('BINANCE', 'PRIVATE_KEY')
 
-if not os.path.exists('Last_Updated.txt'):
+if not os.path.exists('Last_Updated_Socket.txt'):
     last_updated_time = str(
         datetime.now() + dateutil.relativedelta.relativedelta(months=-1))
 else:
-    with open('Last_Updated.txt', 'r') as f:
+    with open('Last_Updated_Socket.txt', 'r') as f:
         last_updated_time = f.read()
 
 client = Client(PUBLIC_KEY, PRIVATE_KEY)
@@ -29,9 +29,12 @@ for coins in client.get_all_tickers():
         coin_df = pd.DataFrame(historical_data, columns=['Open Time', 'Open', 'High', 'Low', 'Close', 'Volume',
                                'Close Time', 'Quote Asset Volume', 'Number of Trades', 'TB Base Volume', 'TB Quote Volume', 'Ignore'])
         coin_df["COIN"] = coins["symbol"][:-4]
-        coin_df["Values"] = coin_df[["COIN", "High", "Low"]].agg(
-            '-'.join, axis=1)
-        df = pd.concat([df, coin_df[["Open Time", "Values"]]], axis=0)
-df['Open Time'] = pd.to_datetime(df['Open Time']/1000, unit='s')
+        if not (coin_df.empty):
+            coin_df["Values"] = coin_df[["COIN", "High", "Low"]].apply(lambda x: "-".join(x), axis=1)
+            df = pd.concat([df, coin_df[["Open Time", "Values"]]], axis=0)
+        df['Open Time'] = df['Open Time'].apply(lambda x: int(x)/1000)
+        df['Open Time'] = pd.to_datetime(df['Open Time'], unit='s')
 
 df.to_csv("../shared/Socket.csv", columns=["Open Time", "Values"], index=False)
+with open('Last_Updated_Socket.txt', 'w') as f:
+        f.write(last_updated_time)

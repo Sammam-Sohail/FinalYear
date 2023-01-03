@@ -10,6 +10,7 @@ services:
     depends_on:
       - mongo
       - socket
+      - telegram
     networks:
       - back
   mongo:
