@@ -60,7 +60,9 @@ for Folder_Name in os.listdir(os.path.join(os.getcwd(),"Telegram","Channels")):
         df1 = df.copy()
         df1 = df1.drop(columns=["Text","Cleaned_text"])
 
-        df1.to_csv(f"{Root_PATH}\\shared\\Calls.csv", encoding='utf-8', index=False,mode="a",header=False)
+        if not os.path.exists(f"{Root_PATH}\\shared\\Calls\\{folder_name}"):
+          os.mkdir(f"{Root_PATH}\\shared\\Calls\\{folder_name}")
 
+        pd.to_pickle(df,f"{Root_PATH}\\shared\\Calls\\{folder_name}\\2_{folder_name}.pkl")
 
 
