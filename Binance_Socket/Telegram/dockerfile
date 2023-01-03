@@ -7,4 +7,5 @@ COPY . /app/usr/src/Telegram/
 RUN pip install -r ./Telegram/requirements.txt
 RUN apt-get update & apt-get install
 
-CMD [ "python","./Telegram/Channels/binancefuturesignal/binancefuturesignal.py" ]
+
+CMD [ "python","./Telegram/Channels/BitmexCourses/BitmexCourses.py" ]

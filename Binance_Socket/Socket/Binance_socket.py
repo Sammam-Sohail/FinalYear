@@ -31,9 +31,13 @@ for coins in client.get_all_tickers():
         coin_df["COIN"] = coins["symbol"][:-4]
         if not (coin_df.empty):
             coin_df["Values"] = coin_df[["COIN", "High", "Low"]].apply(lambda x: "-".join(x), axis=1)
+            coin_df['Open Time'] = coin_df['Open Time']/1000
+            coin_df['Open Time'] = pd.to_datetime(coin_df['Open Time'], unit='s')
             df = pd.concat([df, coin_df[["Open Time", "Values"]]], axis=0)
-        df['Open Time'] = df['Open Time'].apply(lambda x: int(x)/1000)
-        df['Open Time'] = pd.to_datetime(df['Open Time'], unit='s')
+
+        
+        
+        # 
 
 df.to_csv("../shared/Socket.csv", columns=["Open Time", "Values"], index=False)
 with open('Last_Updated_Socket.txt', 'w') as f:

@@ -17,7 +17,8 @@ print("Coins Data Inserted at", datetime.now())
 
 
 for i in os.listdir("./shared/Calls/"):
-    df = pd.read_csv(f"./shared/Calls/{i}/{i}.csv")
+    print(i)
+    df = pd.read_pickle(f"./shared/Calls/{i}/2_{i}.pkl")
     df.drop(columns=["Cleaned_text"])
     data_dict = df.to_dict("records")
     db.Telegram.insert_many(data_dict)
