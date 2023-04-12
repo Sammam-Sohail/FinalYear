@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   connection:
@@ -17,18 +17,18 @@ services:
     image: mongo
     restart: always
     container_name: Mongo
+    ports:
+      - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
-    ports:
-      - 27017:27017
     networks:
       - back
 
   mongo-express:
     image: mongo-express
     restart: always
-    container_name: Mongo_Express
+    container_name: Mongo-Express
     ports:
       - 8081:8081
     environment:

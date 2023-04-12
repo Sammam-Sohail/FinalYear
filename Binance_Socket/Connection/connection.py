@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime
 import os
 client = pymongo.MongoClient(
-    "mongodb://root:example@Mongo:27017/?authSource=admin&readPreference=primary&ssl=false&directConnection=true")
+    "mongodb+srv://admin:BSfzY7TU5FjPkvO7@cluster0.hqyhi3g.mongodb.net/test")
 db = client.Twigram
 print(os.getcwd())
 df = pd.read_csv("./shared/Socker.csv")

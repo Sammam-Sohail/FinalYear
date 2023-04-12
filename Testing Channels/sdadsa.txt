@@ -1,3 +1,0 @@
-Bitmex almost done
-btctrading have a look later
-coin_signals MISSING BUY_Range,coin_name,conversion_name,MISSING leverage,call_exchange,call_type,call_duration,T,stop_loss
