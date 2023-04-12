@@ -20,9 +20,10 @@ global.client = new MongoClient(uri);
 app.get("/calls/:name", async (req, res) => {
 
     var all_calls
-    var name = req.params.name.split('-')
-    name = name[0] + " " + name[1]
-    console.log(name)
+    var name = req.params.name
+    // var name = req.params.name.split('-')
+    // name = name[0] + " " + name[1]
+    // console.log(name)
     var query = { Name: name };
 
     try{
@@ -35,6 +36,16 @@ app.get("/calls/:name", async (req, res) => {
     console.log(all_calls)
     res.send(all_calls)
 })
+
+app.post('/addcall', async (req, res) => {
+  try {
+      existingUser = await client.db("test").collection("calls").insertOne(req.body);
+      res.status(201).json({ message: 'Call added.' });
+} catch (error) {
+console.error(error);
+res.status(500).json({ error: 'Internal server error' });
+}
+});
 
 app.post('/login', async (req, res) => {
     try {
