@@ -8,4 +8,4 @@ RUN pip install -r ./Telegram/requirements.txt
 RUN apt-get update & apt-get install
 
 
-CMD [ "python","./Telegram/Channels/BitmexCourses/BitmexCourses.py" ]
+CMD [ "python","./Telegram/RunAll.py" ]

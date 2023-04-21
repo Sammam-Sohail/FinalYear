@@ -19,7 +19,7 @@ print("Coins Data Inserted at", datetime.now())
 for i in os.listdir("./shared/Calls/"):
     print(i)
     df = pd.read_pickle(f"./shared/Calls/{i}/2_{i}.pkl")
-    df.drop(columns=["Cleaned_text"])
+    df.drop(columns=["Cleaned_text"],inplace=True)
     data_dict = df.to_dict("records")
     db.Telegram.insert_many(data_dict)
     print("Signals Data Inserted at", datetime.now())
