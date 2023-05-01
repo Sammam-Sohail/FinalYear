@@ -112,3 +112,20 @@ app.get("/filtercoins", async (req, res) => {
     console.error(e);
   }
 });
+
+app.get("/influencer", async (req, res) => {
+  // var query = { Name: name };
+
+  try {
+    all_calls = await client
+      .db("Twigram")
+      .collection("Influencer")
+      .find({})
+      .toArray();
+  } catch (e) {
+    console.log(e);
+  }
+
+  console.log(all_calls);
+  res.send(all_calls);
+});
