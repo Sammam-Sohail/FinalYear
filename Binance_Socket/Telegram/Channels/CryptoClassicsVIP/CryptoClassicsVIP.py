@@ -34,6 +34,7 @@ for Folder_Name in os.listdir(os.path.join(os.getcwd(),"Telegram","Channels")):
             Targets= getFirst([float(x) for tup in re.findall(r'target\s*[0-9]\s*(\d+(?:\.\d+)?)\s*[0-9]\s*(\d+(?:\.\d+)?)\s*[0-9]\s*(\d+(?:\.\d+)?)',text,re.IGNORECASE)for x in tup])
             Stoploss = getFirst([float(i) for i in re.findall('stop\s*(\d+(?:\.\d+)?)',text,re.IGNORECASE)])
             return {
+                "Status":"A",
                 "Coin": Name,
                 "Conversion": Conversion,
                 "Exchange": Exchange,
@@ -43,6 +44,7 @@ for Folder_Name in os.listdir(os.path.join(os.getcwd(),"Telegram","Channels")):
                 "Targets": Targets,
                 "Stoploss": Stoploss,
                 "Leverage": Leverage,
+                "CompletedOn":"",
                 }
 
         df['Call']= df['Cleaned_text'].apply(extractor)
