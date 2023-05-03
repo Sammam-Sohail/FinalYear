@@ -17,6 +17,31 @@ const uri =
   "mongodb+srv://admin:BSfzY7TU5FjPkvO7@cluster0.hqyhi3g.mongodb.net/test";
 global.client = new MongoClient(uri);
 
+const db = client.db("Twigram");
+
+/** Gets active calls
+ * filters based on duration > 15 days and non evaluated calls
+ */
+app.get("/activeCalls", async (req, res) =>{
+
+  try{
+    const today = new Date();
+  const year = today.getFullYear();
+  const month = (today.getMonth() + 1).toString().padStart(2, '0');
+  const day = (parseInt(today.getDate().toString().padStart(2, '0'))+15).toString();
+  const formattedDate = `${year}-${month}-${day}`;
+
+    const r = await db.collection("Telegram").find({ $and : [{"Call.Status" : "A"}, { "Date":  {$lte: new Date(new Date() - 15 * 60 * 60 * 24 * 1000)} }] }).toArray()
+    res.send(r)
+  }
+  catch(e){
+    res.send(e)
+  }
+
+})
+
+
+
 app.get("/calls/:name", async (req, res) => {
   var all_calls;
   var name = req.params.name;
