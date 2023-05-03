@@ -1,8 +1,10 @@
 const { MongoClient } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const app = express();
 const cors = require("cors");
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, console.log(`Server started on port ${PORT}`));
 app.use(express.urlencoded({ extended: false }));
@@ -25,14 +27,34 @@ const db = client.db("Twigram");
 app.get("/activeCalls", async (req, res) =>{
 
   try{
-    const today = new Date();
-  const year = today.getFullYear();
-  const month = (today.getMonth() + 1).toString().padStart(2, '0');
-  const day = (parseInt(today.getDate().toString().padStart(2, '0'))+15).toString();
-  const formattedDate = `${year}-${month}-${day}`;
+    const calls = await db.collection("Telegram").find({ $and : [{"Call.Status" : "A"}, { "Timestamp":  { "$lte": Date.now() - (15 * 24 * 60 * 60) }}] }).toArray()
+    res.send(calls)
+  }
+  catch(e){
+    res.send(e)
+  }
 
-    const r = await db.collection("Telegram").find({ $and : [{"Call.Status" : "A"}, { "Date":  {$lte: new Date(new Date() - 15 * 60 * 60 * 24 * 1000)} }] }).toArray()
-    res.send(r)
+})
+
+/** Gets active calls
+ * filters based on duration > 15 days and non evaluated calls
+ */
+app.post("/updateCall", async (req, res) => {
+
+  try{
+
+    let call = req.body;
+
+    const evaluation_time = Math.round(Date.now() / 1000);
+    const time_elapsed = Math.round(Date.now() / 1000) - call.Timestamp;
+    const evaluation = {evaluation_time,time_elapsed}
+
+    var o_id = new ObjectId('64528cf1431df654ee62cc2a');
+  
+
+    const result1 = await db.collection("Telegram").updateOne({'_id': o_id},{$set: {'Call.Status' :'P', evaluation}})
+
+    res.send(result1)
   }
   catch(e){
     res.send(e)
