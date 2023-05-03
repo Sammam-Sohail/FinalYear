@@ -14,7 +14,7 @@ for Folder_Name in os.listdir(os.path.join(os.getcwd(),"Telegram","Channels")):
     if (str(os.path.basename(__file__)).split(".")[0] == Folder_Name):
         os.chdir(os.path.join(os.getcwd(),"Telegram","Channels",Folder_Name))
         folder_name = os.path.basename(os.getcwd())
-        colnames=['Name','Date','Time', 'Text','Cleaned_text'] 
+        colnames=['Name','Date','Timestamp','Cleaned_text'] 
         exchanges = ['BINANCE', 'BYBIT', 'FTX', 'HUOBI', 'KUCOIN', 'POLONIEX','KRAKEN']
         df = pd.read_csv('./1_BitmexCourses.csv',names = colnames,header=None)
         exchanges = 'Binance|kucoin|bitbuy'
@@ -36,17 +36,18 @@ for Folder_Name in os.listdir(os.path.join(os.getcwd(),"Telegram","Channels")):
             leverage = getFirst([float(i) for i in re.findall('[ ]*[-]*[ ]*(\d+)x',text,re.IGNORECASE)])
             stop_loss = getFirst([float(i)for i in re.findall('stop\s*loss\s*-*\s*(\d.\d*)',text,re.IGNORECASE)])
           return {
-              "Status":"A",
-              "Coin": coin_name,
-              "Conversion": conversion_name,
-              "Exchange": call_exchange,
-              "Type": call_type,
-              "Duration": call_duration,
-              "Targets": Targets,
-              "Stoploss": stop_loss,
-              "Leverage": leverage,
-              "CompletedOn":"",
-            }
+                "Status":"A",
+                "Coin": coin_name,
+                "Conversion": conversion_name,
+                "Exchange": call_exchange,
+                "Type": call_type,
+                "Duration": call_duration,
+                "Entry":Entry,
+                "Targets": Targets,
+                "Stoploss": stop_loss,
+                "Leverage": leverage,
+                "CompletedOn":"",
+                }
 
         df['Call']= df['Cleaned_text'].apply(extractor)
           
