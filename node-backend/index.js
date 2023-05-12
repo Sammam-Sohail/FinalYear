@@ -4,6 +4,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const app = express();
 const cors = require("cors");
+const _ = require("lodash")
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, console.log(`Server started on port ${PORT}`));
@@ -47,12 +48,15 @@ app.post("/updateCall", async (req, res) => {
 
     const evaluation_time = Math.round(Date.now() / 1000);
     const time_elapsed = Math.round(Date.now() / 1000) - call.Timestamp;
-    const evaluation = {evaluation_time,time_elapsed}
 
-    var o_id = new ObjectId('64528cf1431df654ee62cc2a');
+    const output = algorithm()
+
+    const evaluation = {evaluation_time,time_elapsed,score : output.number, result : output.status}
+
+    var o_id = new ObjectId(call._id);
   
 
-    const result1 = await db.collection("Telegram").updateOne({'_id': o_id},{$set: {'Call.Status' :'P', evaluation}})
+    const result1 = await db.collection("Telegram_clone").updateOne({'_id': o_id},{$set: {'Call.Status' :'P', evaluation}})
 
     res.send(result1)
   }
@@ -60,6 +64,75 @@ app.post("/updateCall", async (req, res) => {
     res.send(e)
   }
 
+})
+
+
+const algorithm = () => {
+  const number = Math.floor(Math.random() * (100+1))
+  const status = Math.floor(Math.random() * (2)) === 0 ? 'N' : 'P'
+  return {status,number}
+}
+
+
+app.get("/calculate", async (req,res) => {
+
+  try{
+    const influencerNames = await db.collection("Influencer").find().project( {"_id": 0, "name": 1}).toArray()
+
+ influencerNames.forEach(async obj => {
+
+      let name = obj.name
+      //const sum_p = await db.collection("Telegram_clone").countDocuments({$and: [{Name: name, "evaluation.result": "P" }]})
+      //const sum_n = await db.collection("Telegram_clone").countDocuments({$and: [{Name: name, "evaluation.result": "N" }]})
+
+      let sum_p = await db.collection("Telegram_clone").aggregate([{ $match:  {$and: [{ Name: name },   {"evaluation.result": "P" }]}},
+        { $group: { _id: null, sum_p: {$sum: 1}}}]).toArray();
+
+      let sum_n = await db.collection("Telegram_clone").aggregate([{ $match:  {$and: [{ Name: name },   {"evaluation.result": "N" }]}},
+      { $group: { _id: null, sum_n: {$sum: 1}}}]).toArray();
+
+      let score_avg = await db.collection("Telegram_clone").aggregate([{ $match: { Name: name } },
+      { $group: { _id: "$Name", score_avg: {$avg: "$evaluation.score"}}}]).toArray();
+      
+      
+      const data = [...score_avg, ...sum_p, ...sum_n]
+      console.log(score_avg, sum_p, sum_n)
+      
+   });
+    res.status(200).send(influencerNames)
+  }
+  catch(e){
+    res.status(404).send("Request failed")
+  }
+})
+
+app.get('/getDetails/:name' , async(req, res) => {
+  
+  let objects = await client
+  .db("Twigram")
+  .collection("Telegram_clone")
+  .find({
+    $and: [
+      { Name: req.params.name },
+      { 'Call.Status': 'P' }
+    ]
+  })
+  .toArray()
+  
+  let score = _.map(objects , (o) => {
+    return _.get(o , 'evaluation.score')
+  })
+
+  let time_elapsed = _.map(objects , (o) => {
+    return _.get(o , 'evaluation.time_elapsed')
+  })
+
+  
+  res.status(200).send({
+    score ,
+    time_elapsed
+  })
+  
 })
 
 
