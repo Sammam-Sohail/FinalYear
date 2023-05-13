@@ -25,8 +25,7 @@ const db = client.db("Twigram");
 /** Gets active calls
  * filters based on duration > 15 days and non evaluated calls
  */
-app.get("/activeCalls", async (req, res) =>{
-
+app.get("/getUnECalls", async (req, res) =>{
   try{
     const calls = await db.collection("Telegram").find({ $and : [{"Call.Status" : "A"}, { "Timestamp":  { "$lte": Date.now() - (15 * 24 * 60 * 60) }}] }).toArray()
     res.send(calls)
@@ -74,16 +73,42 @@ const algorithm = () => {
 }
 
 
+app.get('/activeCalls', async (req, res) => {
+
+  try{
+
+    const influencerNames = await db.collection("Influencer").find().project( {"_id": 0, "name": 1}).toArray()
+
+    influencerNames.forEach(async obj => {
+
+      let name = obj.name
+
+      let aCalls = await db.collection("Telegram_clone").aggregate([{ $match:  {$and: [{ Name: name }, {'Call.Status' : 'A' }]}},
+      { $group: { _id: null, activeCalls: {$sum: 1}}}]).toArray();
+
+      let activeCalls = aCalls.length!== 0 ? aCalls[0].activeCalls : 0
+
+      const result1 = await db.collection("Influencer").updateOne({name},{$set: {activeCalls}})
+
+      console.log(activeCalls)
+    })
+    res.status(200).send("yo")
+  }
+  catch(e){
+    res.status(404).send("Request failed")
+  }
+})
+
+
 app.get("/calculate", async (req,res) => {
 
   try{
-    const influencerNames = await db.collection("Influencer").find().project( {"_id": 0, "name": 1}).toArray()
+    const influencerNames = await db.collection("Influencer").find().project( {"_id": 0, "name": 1, "activeCalls" : 1}).toArray()
 
  influencerNames.forEach(async obj => {
 
       let name = obj.name
-      //const sum_p = await db.collection("Telegram_clone").countDocuments({$and: [{Name: name, "evaluation.result": "P" }]})
-      //const sum_n = await db.collection("Telegram_clone").countDocuments({$and: [{Name: name, "evaluation.result": "N" }]})
+      let activeCalls = obj.activeCalls
 
       let sum_p = await db.collection("Telegram_clone").aggregate([{ $match:  {$and: [{ Name: name },   {"evaluation.result": "P" }]}},
         { $group: { _id: null, sum_p: {$sum: 1}}}]).toArray();
@@ -94,9 +119,16 @@ app.get("/calculate", async (req,res) => {
       let score_avg = await db.collection("Telegram_clone").aggregate([{ $match: { Name: name } },
       { $group: { _id: "$Name", score_avg: {$avg: "$evaluation.score"}}}]).toArray();
       
-      
-      const data = [...score_avg, ...sum_p, ...sum_n]
-      console.log(score_avg, sum_p, sum_n)
+
+      let postiveCalls = sum_p.length !== 0 ? sum_p[0].sum_p : 0
+      let negativeCalls =  sum_n.length!== 0 ? sum_n[0].sum_n : 0
+      let scoreAverage = score_avg.length!== 0 ? score_avg[0].score_avg : 0
+
+      let totalCalls = postiveCalls + negativeCalls + activeCalls
+
+      const result1 = await db.collection("Influencer").updateOne({name},{$set: {totalCalls, postiveCalls, negativeCalls, scoreAverage}})
+
+      console.log(postiveCalls, negativeCalls, scoreAverage)
       
    });
     res.status(200).send(influencerNames)
@@ -105,6 +137,8 @@ app.get("/calculate", async (req,res) => {
     res.status(404).send("Request failed")
   }
 })
+
+
 
 app.get('/getDetails/:name' , async(req, res) => {
   
